@@ -12,6 +12,11 @@ export class MyAudioPlayer implements PlayerAdapter {
     async init(eventEmitter: EventEmitterForPlayerEvents): Promise<void> {
         console.log("[MyAudioPlayer] init() called");
 
+        const loaded = new Promise<void>((resolve, reject) => {
+            this.htmlAudioElem.addEventListener("loadeddata", () => resolve());
+            this.htmlAudioElem.addEventListener("error", () => reject());
+        });
+
         this.htmlAudioElem.addEventListener("ended", () => {
             console.log("[MyAudioPlayer] ended event");
             eventEmitter.emit("player.ended");
@@ -41,10 +46,14 @@ export class MyAudioPlayer implements PlayerAdapter {
             console.log("[MyAudioPlayer] timeupdate event, currentTime:", this.htmlAudioElem.currentTime);
             eventEmitter.emit("player.timeupdate", this.htmlAudioElem.currentTime);
         });
+
+        await loaded;
     }
 
     destroy(): void {
         console.log("[MyAudioPlayer] destroy() called");
+
+        // this.htmlAudioElem.removeEventListener("")
         this.htmlAudioElem.pause();
         this.htmlAudioElem.src = "";
         this.htmlAudioElem.load();
@@ -79,9 +88,8 @@ export class MyAudioPlayer implements PlayerAdapter {
     }
 
     getDuration(): number {
-        const duration = this.htmlAudioElem.duration;
-        console.log("[MyAudioPlayer] getDuration() called, returning:", duration);
-        return duration;
+        console.log("[MyAudioPlayer] getDuration() called, returning:", this.htmlAudioElem.duration);
+        return this.htmlAudioElem.duration;
     }
 
     seek(time: number): void {
