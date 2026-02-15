@@ -1,16 +1,21 @@
 import type { EventEmitterForPlayerEvents, PlayerAdapter } from "peaks.js";
+import debug from "debug";
+import type { Debugger } from "debug";
 
 export class MyAudioPlayer implements PlayerAdapter {
     private htmlAudioElem: HTMLAudioElement;
-    // private eventEmitter!: EventEmitterForPlayerEvents;
+    private logger: Debugger;
 
     constructor(htmlAudioElem: HTMLAudioElement) {
-        console.log("[MyAudioPlayer] Constructor called");
         this.htmlAudioElem = htmlAudioElem;
+        this.logger = debug("[MyAudioPlayer]");
+        debug.enable("[MyAudioPlayer]");
+
+        this.logger("[MyAudioPlayer] constructor() called");
     }
 
     async init(eventEmitter: EventEmitterForPlayerEvents): Promise<void> {
-        console.log("[MyAudioPlayer] init() called");
+        this.logger("init() called");
 
         const loaded = new Promise<void>((resolve, reject) => {
             this.htmlAudioElem.addEventListener("loadeddata", () => resolve());
@@ -18,32 +23,32 @@ export class MyAudioPlayer implements PlayerAdapter {
         });
 
         this.htmlAudioElem.addEventListener("ended", () => {
-            console.log("[MyAudioPlayer] ended event");
+            this.logger("ended event");
             eventEmitter.emit("player.ended");
         });
 
         this.htmlAudioElem.addEventListener("error", () => {
-            console.log("[MyAudioPlayer] error event", this.htmlAudioElem.error);
+            this.logger("error event", this.htmlAudioElem.error);
             eventEmitter.emit("player.error", this.htmlAudioElem.error);
         });
 
         this.htmlAudioElem.addEventListener("pause", () => {
-            console.log("[MyAudioPlayer] pause event, currentTime:", this.htmlAudioElem.currentTime);
+            this.logger("pause event, currentTime:", this.htmlAudioElem.currentTime);
             eventEmitter.emit("player.pause", this.htmlAudioElem.currentTime);
         });
 
         this.htmlAudioElem.addEventListener("playing", () => {
-            console.log("[MyAudioPlayer] playing event, currentTime:", this.htmlAudioElem.currentTime);
+            this.logger("playing event, currentTime:", this.htmlAudioElem.currentTime);
             eventEmitter.emit("player.playing", this.htmlAudioElem.currentTime);
         });
 
         this.htmlAudioElem.addEventListener("seeked", () => {
-            console.log("[MyAudioPlayer] seeked event, currentTime:", this.htmlAudioElem.currentTime);
+            this.logger("seeked event, currentTime:", this.htmlAudioElem.currentTime);
             eventEmitter.emit("player.seeked", this.htmlAudioElem.currentTime);
         });
 
         this.htmlAudioElem.addEventListener("timeupdate", () => {
-            console.log("[MyAudioPlayer] timeupdate event, currentTime:", this.htmlAudioElem.currentTime);
+            this.logger("timeupdate event, currentTime:", this.htmlAudioElem.currentTime);
             eventEmitter.emit("player.timeupdate", this.htmlAudioElem.currentTime);
         });
 
@@ -51,7 +56,7 @@ export class MyAudioPlayer implements PlayerAdapter {
     }
 
     destroy(): void {
-        console.log("[MyAudioPlayer] destroy() called");
+        this.logger("destroy() called");
 
         // this.htmlAudioElem.removeEventListener("")
         this.htmlAudioElem.pause();
@@ -60,40 +65,40 @@ export class MyAudioPlayer implements PlayerAdapter {
     }
 
     play(): Promise<void> {
-        console.log("[MyAudioPlayer] play() called");
+        this.logger("play() called");
         return this.htmlAudioElem.play();
     }
 
     pause(): void {
-        console.log("[MyAudioPlayer] pause() called");
+        this.logger("pause() called");
         this.htmlAudioElem.pause();
     }
 
     isPlaying(): boolean {
         const playing = !this.htmlAudioElem.paused;
-        console.log("[MyAudioPlayer] isPlaying() called, returning:", playing);
+        this.logger("isPlaying() called, returning:", playing);
         return playing;
     }
 
     isSeeking(): boolean {
         const seeking = this.htmlAudioElem.seeking;
-        console.log("[MyAudioPlayer] isSeeking() called, returning:", seeking);
+        this.logger("isSeeking() called, returning:", seeking);
         return seeking;
     }
 
     getCurrentTime(): number {
         const time = this.htmlAudioElem.currentTime;
-        console.log("[MyAudioPlayer] getCurrentTime() called, returning:", time);
+        this.logger("getCurrentTime() called, returning:", time);
         return time;
     }
 
     getDuration(): number {
-        console.log("[MyAudioPlayer] getDuration() called, returning:", this.htmlAudioElem.duration);
+        this.logger("getDuration() called, returning:", this.htmlAudioElem.duration);
         return this.htmlAudioElem.duration;
     }
 
     seek(time: number): void {
-        console.log("[MyAudioPlayer] seek() called with time:", time);
+        this.logger("seek() called with time:", time);
         this.htmlAudioElem.currentTime = time;
     }
 }

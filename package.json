@@ -18,8 +18,10 @@
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.1.18",
+        "@types/debug": "^4.1.12",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "debug": "^4.4.3",
         "konva": "^10.2.0",
         "lucide-react": "^0.563.0",
         "peaks.js": "^4.0.0",
